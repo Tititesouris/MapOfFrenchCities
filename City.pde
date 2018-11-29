@@ -12,10 +12,12 @@ public class City {
   
   public City(int postalCode, float x, float y, String name, int population, float surface, int altitude) {
     this.postalCode = postalCode;
+    
     this.x = x;
     this.normX = map(x, Stats.minX, Stats.maxX, 0, 1);
     this.y = y;
     this.normY = map(y, Stats.minY, Stats.maxY, 1, 0);
+    
     this.name = name;
     this.population = population;
     this.surface = surface;
@@ -40,30 +42,27 @@ public class City {
     return this.density / 250.0;
   }
   
-  public boolean contains(float x, float y) {
-    return dist(this.normX * width, this.normY * height, x, y) <= getRadius();
+  private color getColor() {
+    float gradient = this.altitude / Stats.maxAltitude;
+    return lerpColor(color(20, 255, 20, 200), color(255, 20, 20, 200), gradient);
   }
   
-  /*
-  Idea:
-  Take every pair of cities, calculate the distance between them and the middle point
-  then place a thing there with interesting stuff:
-    density difference over distance
-    population difference over distance
-  */
-  
-  public void draw(boolean selected) {
-    int x = (int) (this.normX * width);
-    int y = (int) (this.normY * height);
-    float size = getRadius() * 2;
-    float gradient = this.altitude / Stats.maxAltitude;
-    color c = lerpColor(color(20, 255, 20), color(255, 20, 20), gradient);
-    fill(c);
-    if (selected) {
-      stroke(2);
+  public void draw(int mapX, int mapY, int mapWidth, int mapHeight, int importance) {
+    int x = (int) (mapX + this.normX * mapWidth);
+    int y = (int) (mapY + this.normY * mapHeight);
+    float size = this.getRadius() * 2;
+    fill(this.getColor());
+    if (importance == 0) {
+      stroke(0, 0, 0);
+      strokeWeight(1);
     }
-    else {
-      noStroke();
+    else if (importance == 1) {
+      stroke(255, 0, 0);
+      strokeWeight(2);
+    }
+    else if (importance == 2) {
+      stroke(0, 0, 255);
+      strokeWeight(4);
     }
     ellipse(x, y, size, size);
   }

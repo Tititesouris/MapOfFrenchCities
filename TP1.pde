@@ -1,7 +1,9 @@
 ArrayList<City> cities = new ArrayList<City>();
 City selectedCity = null;
-Histogram populationHistogram;
-Slider minDensitySlider = new Slider(15, 40, 250, 20);
+Map map = null;
+Histogram surfaceHistogram = null;
+Slider maxSurfaceSlider = null;
+Slider minSurfaceSlider = null;
 
 void parseHeader(String line) {
   String infoString = line.substring(2); // remove the #
@@ -31,13 +33,11 @@ City parseCity(String line) {
 }
 
 void parseCities(String[] lines) {
-  float[] populations = new float[Stats.nbCities];
   for (int i = lines.length - Stats.nbCities; i < Stats.nbCities; i++) {
     City city = parseCity(lines[i]);
     cities.add(city);
-    populations[i] = city.population;
   }
-  populationHistogram = new Histogram(15, 40, 250, 20, populations);
+  map = new Map(50, 50, 800, 800, cities);
 }
 
 void readData() {
@@ -46,51 +46,61 @@ void readData() {
   parseCities(lines);
 }
 
-void setup() {
-  readData();
-  size(800, 800);
-}
-
-City getSelectedCity() {
+void setupHistograms() {
+  int nbBins = 500;
+  float[] surfaces = new float[nbBins];
   for (int i = cities.size() - 1; i >= 0; i--) {
     City city = cities.get(i);
-    if (city.contains(mouseX, mouseY)) {
-      return city;
-    }
+    surfaces[floor((nbBins - 1) * city.surface / Stats.maxSurface)] += 1;
   }
-  return null;
+  surfaceHistogram = new Histogram(20, height - 110, width - 40, 100, surfaces);
+}
+
+void setupSliders() {
+  maxSurfaceSlider = new Slider(20, height - 100, width - 40, 25, 10, 25, 1, Stats.minSurface, Stats.maxSurface);
+  minSurfaceSlider = new Slider(20, height - 45, width - 40, 25, 10, 25, 0.2, Stats.minSurface, Stats.maxSurface);
+}
+
+void setup() {
+  readData();
+  size(1792, 1008);
+  setupHistograms();
+  setupSliders();
 }
 
 void mouseMoved() {
-  selectedCity = getSelectedCity();
+  map.mouseMoved();
 }
 
 void mousePressed() {
-  minDensitySlider.mousePressed();
+  map.mousePressed();
+  maxSurfaceSlider.mousePressed();
+  minSurfaceSlider.mousePressed();
 }
 
 void mouseDragged() {
-  minDensitySlider.mouseDragged();
+  maxSurfaceSlider.mouseDragged();
+  minSurfaceSlider.mouseDragged();
 }
 
 void mouseReleased() {
-  minDensitySlider.mouseReleased();
+  maxSurfaceSlider.mouseReleased();
+  minSurfaceSlider.mouseReleased();
 }
 
 void draw() {
   background(255, 255, 255);
 
-  float minDensityToDisplay = minDensitySlider.getValue() * Stats.maxDensity;
+  float maxSurfaceToDisplay = maxSurfaceSlider.getRealValue();
+  float minSurfaceToDisplay = minSurfaceSlider.getRealValue();
+  map.draw(minSurfaceToDisplay, maxSurfaceToDisplay);
+  
+  surfaceHistogram.draw(minSurfaceToDisplay, maxSurfaceToDisplay);
+  maxSurfaceSlider.draw();
+  minSurfaceSlider.draw();
+  
   textSize(13);
   fill(0, 0, 0);
-  text(minDensityToDisplay, 100, 35);
-  text("Minimum population to display", 10, 15);
-  populationHistogram.draw();
-  minDensitySlider.draw();
-
-  for (City city : cities) {
-    if (city.density >= minDensityToDisplay) {
-      city.draw(city == selectedCity);
-    }
-  }
+  textAlign(LEFT);
+  text("Number of cities by surface (km²)", 20, height - 115);
 }

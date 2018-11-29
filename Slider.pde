@@ -1,25 +1,27 @@
-public class Slider {
-  int x;
-  int y;
-  int width;
-  int height;
-  float value;
-  boolean focused;
+public class Slider extends RectElement {
   int cursorWidth;
   int cursorHeight;
+  float value;
+  float realMinValue;
+  float realMaxValue;
+  boolean focused;
   
-  public Slider(int x, int y, int width, int height) {
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
+  public Slider(int x, int y, int width, int height, int cursorWidth, int cursorHeight, float defaultValue, float realMinValue, float realMaxValue) {
+    super(x, y, width, height);
+    this.cursorWidth = cursorWidth;
+    this.cursorHeight = cursorHeight;
+    this.value = defaultValue;
+    this.realMinValue = realMinValue;
+    this.realMaxValue = realMaxValue;
     this.focused = false;
-    this.cursorWidth = 10;
-    this.cursorHeight = this.height;
   }
   
   public float getValue() {
     return this.value;
+  }
+  
+  public float getRealValue() {
+    return this.realMinValue + this.value * this.realMaxValue;
   }
   
   private boolean isMouseOver() {
@@ -30,28 +32,35 @@ public class Slider {
     this.value = min(1, max(0, (mouseX - this.x) / (float)this.width));
   }
   
-  void mousePressed() {
+  public void mousePressed() {
     if (isMouseOver()) {
       this.focused = true;
       this.updateValue();
     }
   }
   
-  void mouseDragged() {
+  public void mouseDragged() {
     if (this.focused) {
       this.updateValue();
     }
   }
   
-  void mouseReleased() {
+  public void mouseReleased() {
     this.focused = false;
   }
   
   public void draw() {
-    stroke(0, 0, 0);
+    stroke(0, 0, 0, 50);
+    strokeWeight(1);
     line(this.x, this.y + this.height / 2, this.x + this.width, this.y + this.height / 2);
-    fill(200, 200, 200);
-    rect(this.x + this.value * this.width - this.cursorWidth / 2, this.y + (this.height - this.cursorHeight) / 2, this.cursorWidth, this.cursorHeight);
+    noFill();
+    stroke(0, 0, 0, 255);
+    float cursorX = this.x + this.value * this.width - this.cursorWidth / 2;
+    float cursorY = this.y + (this.height - this.cursorHeight) / 2;
+    rect(cursorX, cursorY, this.cursorWidth, this.cursorHeight);
+    fill(0, 0, 0);
+    textAlign(CENTER);
+    text(this.getRealValue(), cursorX, cursorY - 5);
   }
   
 }
