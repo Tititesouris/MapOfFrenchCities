@@ -8,7 +8,6 @@ public class Histogram extends RectElement {
     this.values = values;
     this.normalizedValues = new float[this.values.length];
     for (int i = 0; i < this.values.length; i++) {
-      println(this.height * this.values[i] / max(this.values));
       this.normalizedValues[i] = this.values[i] / max(this.values);
     }
     this.barWidth = this.width / (float)(this.values.length);
@@ -19,16 +18,12 @@ public class Histogram extends RectElement {
   }
   
   public void draw(float minThreshold, float maxThreshold) {
-    stroke(0, 0, 0);
-    strokeWeight(1);
-    fill(200, 200, 200);
-    rectMode(CORNER);
-    rect(this.x, this.y, this.width, this.height);
+    drawBorder(1);
     for (int i = 0; i < this.values.length; i++) {
-      if (i <= minThreshold) {
+      if (i <= minThreshold * this.values.length) {
         fill(50, 255, 50);
       }
-      else if (i <= maxThreshold) {
+      else if (i < maxThreshold * this.values.length) {
         fill(50, 50, 255);
       }
       else {

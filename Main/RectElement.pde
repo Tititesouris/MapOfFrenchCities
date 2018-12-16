@@ -11,4 +11,12 @@ public class RectElement {
     this.height = height;
   }
   
+  protected void drawBorder(int thickness) {
+    stroke(0, 0, 0);
+    strokeWeight(thickness);
+    fill(255, 255, 255);
+    rectMode(CORNER);
+    rect(this.x, this.y, this.width, this.height);
+  }
+  
 }

@@ -4,15 +4,17 @@ public class Slider extends RectElement {
   float value;
   float realMinValue;
   float realMaxValue;
+  boolean logarithmic;
   boolean focused;
   
-  public Slider(int x, int y, int width, int height, int cursorWidth, int cursorHeight, float defaultValue, float realMinValue, float realMaxValue) {
+  public Slider(int x, int y, int width, int height, int cursorWidth, int cursorHeight, float defaultValue, float realMinValue, float realMaxValue, boolean logarithmic) {
     super(x, y, width, height);
     this.cursorWidth = cursorWidth;
     this.cursorHeight = cursorHeight;
     this.value = defaultValue;
     this.realMinValue = realMinValue;
     this.realMaxValue = realMaxValue;
+    this.logarithmic = logarithmic;
     this.focused = false;
   }
   
@@ -21,7 +23,10 @@ public class Slider extends RectElement {
   }
   
   public float getRealValue() {
-    return this.realMinValue + this.value * this.realMaxValue;
+    if (logarithmic) {
+      return pow(2, log(this.realMinValue) + this.value * (log(this.realMaxValue) - log(this.realMinValue)));
+    }
+    return this.realMinValue + this.value * (this.realMaxValue - this.realMinValue);
   }
   
   private boolean isMouseOver() {
@@ -29,7 +34,7 @@ public class Slider extends RectElement {
   }
   
   private void updateValue() {
-    this.value = min(1, max(0, (mouseX - this.x) / (float)this.width));
+    this.value = constrain((mouseX - this.x) / (float)this.width, 0, 1);
   }
   
   public void mousePressed() {
@@ -50,6 +55,7 @@ public class Slider extends RectElement {
   }
   
   public void draw() {
+    textSize(12);
     stroke(0, 0, 0, 50);
     strokeWeight(1);
     line(this.x, this.y + this.height / 2, this.x + this.width, this.y + this.height / 2);
