@@ -21,13 +21,13 @@ public class Histogram extends RectElement {
     drawBorder(1);
     for (int i = 0; i < this.values.length; i++) {
       if (i <= minThreshold * this.values.length) {
-        fill(50, 255, 50);
+        fill(180, 180, 180);
       }
       else if (i < maxThreshold * this.values.length) {
-        fill(50, 50, 255);
+        fill(90, 220, 90);
       }
       else {
-        fill(255, 50, 50);
+        fill(180, 180, 180);
       }
       drawBar(i);
     }

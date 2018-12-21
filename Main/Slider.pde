@@ -24,13 +24,13 @@ public class Slider extends RectElement {
   
   public float getRealValue() {
     if (logarithmic) {
-      return pow(2, log(this.realMinValue) + this.value * (log(this.realMaxValue) - log(this.realMinValue)));
+      return exp(this.value * log(1 + this.realMaxValue)) - 1 + this.realMinValue;
     }
     return this.realMinValue + this.value * (this.realMaxValue - this.realMinValue);
   }
   
   private boolean isMouseOver() {
-    return this.x - (this.cursorWidth / 2) <= mouseX && mouseX <= this.x + this.width + (this.cursorWidth / 2) && this.y <= mouseY && mouseY <= this.y + this.height;
+    return this.x - (this.cursorWidth / 2) <= mouseX && mouseX <= this.x + this.width + (this.cursorWidth / 2) && this.y - this.height / 2 <= mouseY && mouseY <= this.y + this.height / 2;
   }
   
   private void updateValue() {
@@ -58,15 +58,21 @@ public class Slider extends RectElement {
     textSize(12);
     stroke(0, 0, 0, 50);
     strokeWeight(1);
-    line(this.x, this.y + this.height / 2, this.x + this.width, this.y + this.height / 2);
+    line(this.x, this.y, this.x + this.width, this.y);
     noFill();
-    stroke(0, 0, 0, 255);
+    stroke(0, 0, 0, 200);
+    strokeWeight(2);
     float cursorX = this.x + this.value * this.width - this.cursorWidth / 2;
-    float cursorY = this.y + (this.height - this.cursorHeight) / 2;
+    float cursorY = this.y - this.cursorHeight / 2;
     rect(cursorX, cursorY, this.cursorWidth, this.cursorHeight);
-    fill(0, 0, 0);
+    
+    noStroke();
+    float textWidth = textWidth(nf(this.getRealValue(), 0, 2));
     textAlign(CENTER);
-    text(this.getRealValue(), cursorX, cursorY - 5);
+    fill(255, 255, 255, 150);
+    rect(cursorX - textWidth / 2, cursorY - this.cursorHeight / 2 - 5, textWidth, 15);
+    fill(0, 0, 0);
+    text(nf(this.getRealValue(), 0, 2), cursorX, cursorY - this.cursorHeight / 2 + 7); 
   }
   
 }

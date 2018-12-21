@@ -22,7 +22,7 @@ public class City implements Comparable<City> {
     this.population = population;
     this.surface = surface;
     this.altitude = altitude;
-    this.density = this.population / this.surface;
+    this.density = (this.surface > 0) ? this.population / this.surface : 0;
     
     if (this.normX < Stats.minNormX)
       Stats.minNormX = this.normX;
@@ -67,30 +67,34 @@ public class City implements Comparable<City> {
   }
   
   private float getRadius() {
-    return max(0.75, this.population / 50000.0);
+    return max(0.75, sqrt(this.population / 1000.0));
   }
   
   private color getColor() {
-    float gradient = this.density / Stats.maxDensity;
-    return lerpColor(color(20, 255, 20, 200), color(255, 20, 20, 200), gradient);
+    float gradient = log(1 + this.density) / log(1 + Stats.maxDensity);
+    return lerpColor(color(20, 255, 20, 180), color(255, 20, 20, 180), gradient);
   }
   
   public void draw(int x, int y, float zoom, int importance) {
     float size = this.getRadius() * 2 * zoom;
     fill(this.getColor());
-    if (importance == 0) {
-      stroke(0, 0, 0);
-      strokeWeight(1);
+    if (importance > 0) {
+      stroke(50, 50, 220);
+      strokeWeight(1 + (importance - 1) * 2);
     }
-    else if (importance == 1) {
-      stroke(255, 0, 0);
-      strokeWeight(2);
-    }
-    else if (importance == 2) {
-      stroke(0, 0, 255);
-      strokeWeight(4);
-    }
+    rectMode(CENTER);
     ellipse(x, y, size, size);
+    rectMode(CORNER);
+    if (importance > 0) {
+      noStroke();
+      float textWidth = textWidth(this.name) + 5;
+      fill(255, 255, 255, 150);
+      rect(x - textWidth / 2, y - 30, textWidth, 15);
+      fill(0, 0, 0);
+      textSize(12);
+      textAlign(CENTER);
+      text(this.name, x, y - 18);
+    }
   }
   
 }

@@ -14,7 +14,14 @@ public class RectElement {
   protected void drawBorder(int thickness) {
     stroke(0, 0, 0);
     strokeWeight(thickness);
-    fill(255, 255, 255);
+    noFill();
+    rectMode(CORNER);
+    rect(this.x, this.y, this.width, this.height);
+  }
+  
+  protected void drawBackground(color c) {
+    noStroke();
+    fill(c);
     rectMode(CORNER);
     rect(this.x, this.y, this.width, this.height);
   }

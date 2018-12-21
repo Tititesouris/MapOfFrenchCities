@@ -2,7 +2,6 @@ public class TextPanel extends RectElement {
   String title;
   String[][] text;
   
-  
   public TextPanel(int x, int y, int width, int height, String title, String[][] text) {
     super(x, y, width, height);
     this.title = title;
@@ -23,11 +22,10 @@ public class TextPanel extends RectElement {
     for (int i = 0; i < this.text.length; i++) {
       fill(0, 0, 0);
       textAlign(LEFT);
-      text(this.text[i][0], this.x + 5, this.y + 22 * (i + 2));
+      text(this.text[i][0], this.x + 5, this.y + 30 + 22 * (i + 1));
       textAlign(RIGHT);
       fill(unhex(this.text[i][2]));
-      println();
-      text(this.text[i][1], this.x + this.width - 5, this.y + 22 * (i + 2));
+      text(this.text[i][1], this.x + this.width - 5, this.y + 30 + 22 * (i + 1));
     }
   }
   
